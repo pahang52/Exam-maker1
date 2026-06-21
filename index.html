@@ -1,16 +1,321 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>برنامه طراحی آزمون - نیکزاد فرد</title>
-    <meta name="description" content="برنامه طراحی آزمون با قابلیت ذخیره‌سازی، خروجی PDF و Word" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Workflow اصلاح‌شده</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800&display=swap');
+    * { font-family: 'Vazirmatn', sans-serif; box-sizing: border-box; }
+    body { background: #0d1117; min-height: 100vh; margin: 0; }
+
+    .code-wrap {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 0 0 12px 12px;
+      overflow-x: auto;
+      position: relative;
+    }
+    .code-header {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px 12px 0 0;
+      padding: 10px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    pre {
+      margin: 0;
+      padding: 20px 20px 20px 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      line-height: 2;
+      direction: ltr;
+      text-align: left;
+      white-space: pre;
+      counter-reset: line;
+    }
+    .ln {
+      display: inline-block;
+      width: 28px;
+      color: #484f58;
+      user-select: none;
+      margin-left: 16px;
+      text-align: right;
+      font-size: 0.75rem;
+    }
+    .add  { background: rgba(35,134,54,0.18); display: block; margin: 0 -20px; padding: 0 20px; border-right: 3px solid #3fb950; }
+    .rem  { background: rgba(248,81,73,0.14); display: block; margin: 0 -20px; padding: 0 20px; border-right: 3px solid #f85149; text-decoration: line-through; opacity: 0.7; }
+    .com  { color: #8b949e; }
+    .key  { color: #79c0ff; }
+    .val  { color: #e3b341; }
+    .cmd  { color: #3fb950; }
+    .str  { color: #ffa657; }
+    .neu  { color: #c9d1d9; }
+    .pur  { color: #bc8cff; }
+
+    .copy-btn {
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      border-radius: 6px;
+      padding: 5px 14px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Vazirmatn', sans-serif;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .copy-btn:hover { background: #30363d; color: #e6edf3; }
+
+    .badge {
+      display: inline-block; padding: 3px 10px;
+      border-radius: 100px; font-size: 0.72rem; font-weight: 700;
+    }
+    .b-green  { background: rgba(35,134,54,0.2);  color: #3fb950; border: 1px solid rgba(35,134,54,0.5); }
+    .b-red    { background: rgba(248,81,73,0.2);   color: #f85149; border: 1px solid rgba(248,81,73,0.5); }
+    .b-blue   { background: rgba(31,111,235,0.2);  color: #79c0ff; border: 1px solid rgba(31,111,235,0.5); }
+    .b-yellow { background: rgba(227,179,65,0.2);  color: #e3b341; border: 1px solid rgba(227,179,65,0.5); }
+
+    .change-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: #161b22; border-radius: 8px; padding: 12px 14px;
+      border: 1px solid #30363d;
+    }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #0d1117; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+  </style>
+</head>
+<body class="py-8 px-4">
+<div class="max-w-3xl mx-auto">
+
+  <!-- Header -->
+  <div class="text-center mb-7">
+    <h1 style="color:#e6edf3; font-size:1.4rem; font-weight:800; margin-bottom:4px;">✅ Workflow اصلاح‌شده</h1>
+    <p style="color:#8b949e; font-size:0.85rem;">فایل <code style="color:#ffa657; background:#161b22; padding:1px 7px; border-radius:4px;">.github/workflows/build.yml</code></p>
+  </div>
+
+  <!-- Changes summary -->
+  <div style="background:#161b22; border:1px solid #30363d; border-radius:12px; padding:16px 18px; margin-bottom:20px;">
+    <p style="color:#e6edf3; font-weight:700; font-size:0.9rem; margin-bottom:12px;">🔄 تغییرات اعمال‌شده:</p>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <div class="change-row">
+        <span class="badge b-red" style="flex-shrink:0; margin-top:1px;">حذف</span>
+        <p style="color:#8b949e; font-size:0.83rem; margin:0;">مرحله <code style="color:#f85149;">cap init</code> و <code style="color:#f85149;">cap add android</code> — این‌ها فقط لوکال اجرا می‌شوند</p>
+      </div>
+      <div class="change-row">
+        <span class="badge b-green" style="flex-shrink:0; margin-top:1px;">اضافه</span>
+        <p style="color:#8b949e; font-size:0.83rem; margin:0;">نصب <code style="color:#3fb950;">@capacitor/cli @capacitor/core @capacitor/android</code> در مرحله Install Dependencies</p>
+      </div>
+      <div class="change-row">
+        <span class="badge b-green" style="flex-shrink:0; margin-top:1px;">اضافه</span>
+        <p style="color:#8b949e; font-size:0.83rem; margin:0;">مرحله <code style="color:#3fb950;">npx cap sync android</code> به جای cap init</p>
+      </div>
+      <div class="change-row">
+        <span class="badge b-yellow" style="flex-shrink:0; margin-top:1px;">تغییر</span>
+        <p style="color:#8b949e; font-size:0.83rem; margin:0;">Java از <code style="color:#f85149;">21</code> به <code style="color:#3fb950;">17</code> — سازگارتر با Gradle و Capacitor</p>
+      </div>
+      <div class="change-row">
+        <span class="badge b-red" style="flex-shrink:0; margin-top:1px;">حذف</span>
+        <p style="color:#8b949e; font-size:0.83rem; margin:0;">مرحله <code style="color:#f85149;">Fix Java Version in Gradle</code> — دیگر نیازی نیست چون Java 17 ست شده</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Code -->
+  <div class="code-header">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div style="display:flex; gap:6px;">
+        <div style="width:12px;height:12px;border-radius:50%;background:#ff5f56;"></div>
+        <div style="width:12px;height:12px;border-radius:50%;background:#ffbd2e;"></div>
+        <div style="width:12px;height:12px;border-radius:50%;background:#27c93f;"></div>
+      </div>
+      <span style="color:#8b949e; font-size:0.8rem;">📄 .github/workflows/build.yml</span>
+    </div>
+    <button class="copy-btn" id="mainCopyBtn" onclick="copyMain()">
+      <span>📋</span><span>کپی کامل</span>
+    </button>
+  </div>
+  <div class="code-wrap">
+    <pre id="mainCode"><span class="neu"><span class="ln">1</span><span class="key">name</span>: Build Android APK</span>
+<span class="neu"><span class="ln">2</span><span class="key">on</span>:</span>
+<span class="neu"><span class="ln">3</span>  <span class="key">push</span>:</span>
+<span class="neu"><span class="ln">4</span>    <span class="key">branches</span>:</span>
+<span class="neu"><span class="ln">5</span>      - main</span>
+<span class="neu"><span class="ln">6</span>      - master</span>
+<span class="neu"><span class="ln">7</span>  <span class="key">workflow_dispatch</span>:</span>
+<span class="neu"><span class="ln">8</span></span>
+<span class="neu"><span class="ln">9</span><span class="key">jobs</span>:</span>
+<span class="neu"><span class="ln">10</span>  <span class="key">build</span>:</span>
+<span class="neu"><span class="ln">11</span>    <span class="key">runs-on</span>: ubuntu-latest</span>
+<span class="neu"><span class="ln">12</span></span>
+<span class="neu"><span class="ln">13</span>    <span class="key">steps</span>:</span>
+<span class="neu"><span class="ln">14</span>      - <span class="key">name</span>: Checkout Source Code</span>
+<span class="neu"><span class="ln">15</span>        <span class="key">uses</span>: actions/checkout@v4</span>
+<span class="neu"><span class="ln">16</span></span>
+<span class="neu"><span class="ln">17</span>      - <span class="key">name</span>: Setup Node.js</span>
+<span class="neu"><span class="ln">18</span>        <span class="key">uses</span>: actions/setup-node@v4</span>
+<span class="neu"><span class="ln">19</span>        <span class="key">with</span>:</span>
+<span class="neu"><span class="ln">20</span>          <span class="key">node-version</span>: 20</span>
+<span class="neu"><span class="ln">21</span></span>
+<span class="add"><span class="ln">22</span>      - <span class="key">name</span>: Install Dependencies + Capacitor</span>
+<span class="add"><span class="ln">23</span>        <span class="key">run</span>: |</span>
+<span class="add"><span class="ln">24</span>          npm install</span>
+<span class="add"><span class="ln">25</span>          npm install @capacitor/cli @capacitor/core @capacitor/android --save</span>
+<span class="neu"><span class="ln">26</span></span>
+<span class="neu"><span class="ln">27</span>      - <span class="key">name</span>: Build React App</span>
+<span class="neu"><span class="ln">28</span>        <span class="key">run</span>: npm run build</span>
+<span class="neu"><span class="ln">29</span></span>
+<span class="add"><span class="ln">30</span>      - <span class="key">name</span>: Setup Java JDK 17</span>
+<span class="add"><span class="ln">31</span>        <span class="key">uses</span>: actions/setup-java@v4</span>
+<span class="add"><span class="ln">32</span>        <span class="key">with</span>:</span>
+<span class="add"><span class="ln">33</span>          <span class="key">distribution</span>: <span class="val">'temurin'</span></span>
+<span class="add"><span class="ln">34</span>          <span class="key">java-version</span>: <span class="val">'17'</span></span>
+<span class="neu"><span class="ln">35</span></span>
+<span class="neu"><span class="ln">36</span>      - <span class="key">name</span>: Setup Android SDK</span>
+<span class="neu"><span class="ln">37</span>        <span class="key">uses</span>: android-actions/setup-android@v3</span>
+<span class="neu"><span class="ln">38</span></span>
+<span class="add"><span class="ln">39</span>      - <span class="key">name</span>: Sync Capacitor</span>
+<span class="add"><span class="ln">40</span>        <span class="key">run</span>: npx cap sync android</span>
+<span class="neu"><span class="ln">41</span></span>
+<span class="neu"><span class="ln">42</span>      - <span class="key">name</span>: Fix Kotlin Duplicates</span>
+<span class="neu"><span class="ln">43</span>        <span class="key">run</span>: |</span>
+<span class="neu"><span class="ln">44</span>          cat >> android/build.gradle &lt;&lt; 'EOF'</span>
+<span class="neu"><span class="ln">45</span>          subprojects {</span>
+<span class="neu"><span class="ln">46</span>              configurations.all {</span>
+<span class="neu"><span class="ln">47</span>                  resolutionStrategy {</span>
+<span class="neu"><span class="ln">48</span>                      force "org.jetbrains.kotlin:kotlin-stdlib:1.9.0"</span>
+<span class="neu"><span class="ln">49</span>                      force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0"</span>
+<span class="neu"><span class="ln">50</span>                      force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0"</span>
+<span class="neu"><span class="ln">51</span>                  }</span>
+<span class="neu"><span class="ln">52</span>              }</span>
+<span class="neu"><span class="ln">53</span>          }</span>
+<span class="neu"><span class="ln">54</span>          EOF</span>
+<span class="neu"><span class="ln">55</span></span>
+<span class="neu"><span class="ln">56</span>      - <span class="key">name</span>: Build APK (Debug)</span>
+<span class="neu"><span class="ln">57</span>        <span class="key">run</span>: |</span>
+<span class="neu"><span class="ln">58</span>          cd android</span>
+<span class="neu"><span class="ln">59</span>          chmod +x gradlew</span>
+<span class="neu"><span class="ln">60</span>          ./gradlew assembleDebug \</span>
+<span class="neu"><span class="ln">61</span>            -Pandroid.useAndroidX=true \</span>
+<span class="neu"><span class="ln">62</span>            -Pandroid.enableJetifier=true</span>
+<span class="neu"><span class="ln">63</span></span>
+<span class="neu"><span class="ln">64</span>      - <span class="key">name</span>: Upload APK</span>
+<span class="neu"><span class="ln">65</span>        <span class="key">uses</span>: actions/upload-artifact@v4</span>
+<span class="neu"><span class="ln">66</span>        <span class="key">with</span>:</span>
+<span class="neu"><span class="ln">67</span>          <span class="key">name</span>: exam-maker-apk</span>
+<span class="neu"><span class="ln">68</span>          <span class="key">path</span>: android/app/build/outputs/apk/debug/app-debug.apk</span></pre>
+  </div>
+
+  <!-- Warning -->
+  <div style="background:rgba(227,179,65,0.08); border:1px solid rgba(227,179,65,0.3); border-radius:10px; padding:14px 16px; margin-top:20px;">
+    <p style="color:#e3b341; font-weight:700; font-size:0.88rem; margin-bottom:8px;">⚠️ قبل از push این workflow، باید لوکال انجام بدی:</p>
+    <div style="background:#0d1117; border-radius:8px; padding:12px 14px; font-family:'Courier New',monospace; font-size:0.8rem; direction:ltr; text-align:left; line-height:2;">
+      <span style="color:#8b949e;"># یکبار روی کامپیوتر خودت اجرا کن:</span><br>
+      <span style="color:#3fb950;">npm install @capacitor/cli @capacitor/core @capacitor/android --save</span><br>
+      <span style="color:#3fb950;">npm run build</span><br>
+      <span style="color:#3fb950;">npx cap init <span style="color:#e3b341;">"ExamMaker"</span> <span style="color:#e3b341;">"com.nikzadfard.exammaker"</span> --web-dir=dist</span><br>
+      <span style="color:#3fb950;">npx cap add android</span><br>
+      <span style="color:#3fb950;">git add .</span><br>
+      <span style="color:#3fb950;">git commit -m <span style="color:#e3b341;">"Add capacitor android platform"</span></span><br>
+      <span style="color:#3fb950;">git push</span>
+    </div>
+  </div>
+
+  <div class="text-center mt-6" style="color:#30363d; font-size:0.75rem; padding-bottom:16px;">
+    GitHub Actions · Capacitor Android Build Fix
+  </div>
+</div>
+
+<script>
+  const rawYml = `name: Build Android APK
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies + Capacitor
+        run: |
+          npm install
+          npm install @capacitor/cli @capacitor/core @capacitor/android --save
+
+      - name: Build React App
+        run: npm run build
+
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Sync Capacitor
+        run: npx cap sync android
+
+      - name: Fix Kotlin Duplicates
+        run: |
+          cat >> android/build.gradle << 'EOF'
+          subprojects {
+              configurations.all {
+                  resolutionStrategy {
+                      force "org.jetbrains.kotlin:kotlin-stdlib:1.9.0"
+                      force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0"
+                      force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0"
+                  }
+              }
+          }
+          EOF
+
+      - name: Build APK (Debug)
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug \\
+            -Pandroid.useAndroidX=true \\
+            -Pandroid.enableJetifier=true
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: exam-maker-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk`;
+
+  function copyMain() {
+    navigator.clipboard.writeText(rawYml).then(() => {
+      const btn = document.getElementById('mainCopyBtn');
+      btn.innerHTML = '<span>✅</span><span>کپی شد!</span>';
+      btn.style.background = 'rgba(35,134,54,0.2)';
+      btn.style.borderColor = 'rgba(35,134,54,0.5)';
+      btn.style.color = '#3fb950';
+      setTimeout(() => {
+        btn.innerHTML = '<span>📋</span><span>کپی کامل</span>';
+        btn.style.background = '';
+        btn.style.borderColor = '';
+        btn.style.color = '';
+      }, 2500);
+    });
+  }
+</script>
+</body>
 </html>
