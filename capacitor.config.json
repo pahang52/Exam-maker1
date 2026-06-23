@@ -1,6 +1,8 @@
 {
-  "appId": "com.nikzadfard.exammaker",
-  "appName": "طراحی آزمون نیکزاد",
+  "appId": "com.exammaker.app",
+  "appName": "Exam Maker",
   "webDir": "dist",
-  "bundledWebRuntime": false
+  "server": {
+    "androidScheme": "https"
+  }
 }
