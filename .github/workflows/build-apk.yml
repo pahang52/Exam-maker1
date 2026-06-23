@@ -36,12 +36,32 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
+      - name: Create Capacitor Config (if missing)
+        run: |
+          if [ ! -f capacitor.config.json ] && [ ! -f capacitor.config.ts ]; then
+            echo '{
+              "appId": "com.exammaker.app",
+              "appName": "Exam Maker",
+              "webDir": "dist",
+              "server": {
+                "androidScheme": "https"
+              }
+            }' > capacitor.config.json
+            echo "capacitor.config.json created"
+          else
+            echo "capacitor.config already exists"
+          fi
+
+      - name: Add Android Platform
+        run: npx cap add android
+
       - name: Sync Capacitor
         run: npx cap sync android
 
       - name: Fix Kotlin Duplicates
         run: |
           cat >> android/build.gradle << 'EOF'
+
           subprojects {
               configurations.all {
                   resolutionStrategy {
