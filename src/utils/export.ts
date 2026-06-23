@@ -11,34 +11,33 @@ const TYPE_LABELS: Record<QuestionType, string> = {
 };
 
 function questionToText(q: Question, index: number): string {
-  let text = `${index + 1}. [${TYPE_LABELS[q.type]}] ${q.text}  (${q.score} نمره)\n`;
-
+  let text = `${index + 1}. [${TYPE_LABELS[q.type]}] ${q.text} (${q.score} نمره)\n`;
   if (q.type === 'multiple_choice' && q.options) {
     q.options.forEach((opt, i) => {
       const labels = ['الف', 'ب', 'ج', 'د'];
-      text += `   ${labels[i] || i + 1}) ${opt.text}\n`;
+      text += `  ${labels[i] || i + 1}) ${opt.text}\n`;
     });
   }
   if (q.type === 'true_false') {
-    text += `   صحیح ☐   غلط ☐\n`;
+    text += `  صحیح ☐  غلط ☐\n`;
   }
   if (q.type === 'fill_blank' || q.type === 'short_answer') {
-    text += `   پاسخ: ___________________________\n`;
+    text += `  پاسخ: ___________________________\n`;
   }
   if (q.type === 'matching' && q.matchingPairs) {
-    text += `   ستون الف:\n`;
+    text += `  ستون الف:\n`;
     q.matchingPairs.forEach((p, i) => {
-      text += `   ${i + 1}. ${p.left}\n`;
+      text += `    ${i + 1}. ${p.left}\n`;
     });
-    text += `   ستون ب:\n`;
+    text += `  ستون ب:\n`;
     const shuffled = [...q.matchingPairs].sort(() => Math.random() - 0.5);
     shuffled.forEach((p, i) => {
       const letters = ['الف', 'ب', 'ج', 'د', 'ه'];
-      text += `   ${letters[i] || i + 1}. ${p.right}\n`;
+      text += `    ${letters[i] || i + 1}. ${p.right}\n`;
     });
   }
   if (q.type === 'descriptive') {
-    text += `   \n   \n   \n`;
+    text += `  \n  \n  \n`;
   }
   return text + '\n';
 }
@@ -52,7 +51,6 @@ export function exportToText(exam: Exam): void {
   content += `سال تحصیلی: ${exam.academicYear} | مدت: ${exam.duration} دقیقه\n`;
   content += `مجموع نمرات: ${totalScore}\n`;
   content += '─'.repeat(50) + '\n\n';
-
   exam.questions.forEach((q, i) => {
     content += questionToText(q, i);
   });
@@ -79,9 +77,12 @@ export function exportToJSON(exam: Exam): void {
 }
 
 export async function exportToPDF(exam: Exam): Promise<void> {
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  });
 
-  // Since jsPDF doesn't natively support Persian/RTL, we'll build a simple layout
   doc.setFont('helvetica');
   doc.setR2L(true);
 
@@ -107,7 +108,10 @@ export async function exportToPDF(exam: Exam): Promise<void> {
   addText(`${exam.title}`, 18, true);
   addText(`درس: ${exam.subject} | پایه: ${exam.grade}`, 11);
   addText(`معلم: ${exam.teacherName} | مدرسه: ${exam.schoolName}`, 11);
-  addText(`سال تحصیلی: ${exam.academicYear} | مدت: ${exam.duration} دقیقه | مجموع: ${totalScore} نمره`, 10);
+  addText(
+    `سال تحصیلی: ${exam.academicYear} | مدت: ${exam.duration} دقیقه | مجموع: ${totalScore} نمره`,
+    10
+  );
 
   doc.setLineWidth(0.3);
   doc.line(margin, y, pageWidth - margin, y);
@@ -115,7 +119,7 @@ export async function exportToPDF(exam: Exam): Promise<void> {
 
   exam.questions.forEach((q, i) => {
     const label = TYPE_LABELS[q.type];
-    addText(`${i + 1}. [${label}] ${q.text}  (${q.score} نمره)`, 11, true);
+    addText(`${i + 1}. [${label}] ${q.text} (${q.score} نمره)`, 11, true);
 
     if (q.type === 'multiple_choice' && q.options) {
       const labels = ['الف', 'ب', 'ج', 'د'];
@@ -124,18 +128,22 @@ export async function exportToPDF(exam: Exam): Promise<void> {
       });
     }
     if (q.type === 'true_false') {
-      addText(`  صحیح [  ]   غلط [  ]`, 10);
+      addText(`  صحیح [ ]   غلط [ ]`, 10);
     }
     if (q.type === 'fill_blank' || q.type === 'short_answer') {
       addText(`  پاسخ: .......................................`, 10);
     }
     if (q.type === 'matching' && q.matchingPairs) {
       addText(`  ستون الف:`, 10, true);
-      q.matchingPairs.forEach((p, idx) => addText(`  ${idx + 1}. ${p.left}`, 10));
+      q.matchingPairs.forEach((p, idx) =>
+        addText(`    ${idx + 1}. ${p.left}`, 10)
+      );
       addText(`  ستون ب:`, 10, true);
       const shuffled = [...q.matchingPairs].sort(() => Math.random() - 0.5);
       const letters = ['الف', 'ب', 'ج', 'د', 'ه'];
-      shuffled.forEach((p, idx) => addText(`  ${letters[idx] || idx + 1}. ${p.right}`, 10));
+      shuffled.forEach((p, idx) =>
+        addText(`    ${letters[idx] || idx + 1}. ${p.right}`, 10)
+      );
     }
     if (q.type === 'descriptive') {
       addText(`  .................................................................`, 10);
