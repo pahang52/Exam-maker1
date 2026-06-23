@@ -13,14 +13,24 @@ interface Props {
 function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleDateString('fa-IR', {
-      year: 'numeric', month: 'long', day: 'numeric',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     });
   } catch {
     return iso;
   }
 }
 
-function ExamItem({ exam, onEdit, onDelete }: { exam: Exam; onEdit: () => void; onDelete: () => void }) {
+function ExamItem({
+  exam,
+  onEdit,
+  onDelete,
+}: {
+  exam: Exam;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
   const [confirm, setConfirm] = useState(false);
   const totalScore = exam.questions.reduce((s, q) => s + q.score, 0);
 
@@ -32,8 +42,12 @@ function ExamItem({ exam, onEdit, onDelete }: { exam: Exam; onEdit: () => void; 
             <h3 className="font-bold text-gray-900 text-sm truncate">{exam.title}</h3>
             <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1">
               <span className="text-xs text-gray-500">{exam.subject}</span>
-              {exam.grade && <span className="text-xs text-gray-500">پایه {exam.grade}</span>}
-              <span className="text-xs text-gray-500">{exam.questions.length} سوال • {totalScore} نمره</span>
+              {exam.grade && (
+                <span className="text-xs text-gray-500">پایه {exam.grade}</span>
+              )}
+              <span className="text-xs text-gray-500">
+                {exam.questions.length} سوال • {totalScore} نمره
+              </span>
             </div>
             <p className="text-xs text-gray-400 mt-1">{formatDate(exam.createdAt)}</p>
           </div>
@@ -46,11 +60,26 @@ function ExamItem({ exam, onEdit, onDelete }: { exam: Exam; onEdit: () => void; 
             </button>
             {confirm ? (
               <div className="flex gap-1">
-                <button onClick={onDelete} className="text-xs bg-red-500 text-white px-2 py-1 rounded-lg">حذف</button>
-                <button onClick={() => setConfirm(false)} className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-lg">لغو</button>
+                <button
+                  onClick={onDelete}
+                  className="text-xs bg-red-500 text-white px-2 py-1 rounded-lg"
+                >
+                  حذف
+                </button>
+                <button
+                  onClick={() => setConfirm(false)}
+                  className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-lg"
+                >
+                  لغو
+                </button>
               </div>
             ) : (
-              <button onClick={() => setConfirm(true)} className="text-red-400 hover:text-red-600 text-xs">🗑️</button>
+              <button
+                onClick={() => setConfirm(true)}
+                className="text-red-400 hover:text-red-600 text-xs"
+              >
+                🗑️
+              </button>
             )}
           </div>
         </div>
@@ -59,7 +88,14 @@ function ExamItem({ exam, onEdit, onDelete }: { exam: Exam; onEdit: () => void; 
   );
 }
 
-export default function HomePage({ exams, banks, onNewExam, onEditExam, onDeleteExam, onOpenBank }: Props) {
+export default function HomePage({
+  exams,
+  banks,
+  onNewExam,
+  onEditExam,
+  onDeleteExam,
+  onOpenBank,
+}: Props) {
   const totalQuestions = exams.reduce((s, e) => s + e.questions.length, 0);
   const bankQuestions = banks.reduce((s, b) => s + b.questions.length, 0);
 
@@ -94,7 +130,10 @@ export default function HomePage({ exams, banks, onNewExam, onEditExam, onDelete
             { label: 'سوالات', value: totalQuestions, icon: '❓', color: 'from-purple-500 to-pink-600' },
             { label: 'بانک سوال', value: bankQuestions, icon: '🗃️', color: 'from-emerald-500 to-teal-600' },
           ].map(stat => (
-            <div key={stat.label} className={`bg-gradient-to-br ${stat.color} rounded-2xl p-4 text-white text-center shadow-lg`}>
+            <div
+              key={stat.label}
+              className={`bg-gradient-to-br ${stat.color} rounded-2xl p-4 text-white text-center shadow-lg`}
+            >
               <div className="text-2xl">{stat.icon}</div>
               <div className="text-2xl font-bold mt-1">{stat.value}</div>
               <div className="text-xs opacity-80 mt-0.5">{stat.label}</div>
@@ -127,7 +166,9 @@ export default function HomePage({ exams, banks, onNewExam, onEditExam, onDelete
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-bold text-gray-900 text-sm">آزمون‌های ذخیره‌شده</h2>
             {exams.length > 0 && (
-              <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{exams.length} آزمون</span>
+              <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                {exams.length} آزمون
+              </span>
             )}
           </div>
 
