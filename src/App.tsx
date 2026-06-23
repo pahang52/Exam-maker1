@@ -29,7 +29,7 @@ export default function App() {
   };
 
   return (
-    <div dir="rtl" className="font-['Vazirmatn',_sans-serif]">
+    <>
       {page === 'home' && (
         <HomePage
           exams={exams}
@@ -40,15 +40,14 @@ export default function App() {
           onOpenBank={() => setPage('bank')}
         />
       )}
-
       {page === 'builder' && (
         <ExamBuilder
           exam={editingExam}
+          banks={banks}
           onSave={handleSaveExam}
           onBack={() => setPage('home')}
         />
       )}
-
       {page === 'bank' && (
         <BankPage
           banks={banks}
@@ -59,6 +58,6 @@ export default function App() {
           onBack={() => setPage('home')}
         />
       )}
-    </div>
+    </>
   );
 }
