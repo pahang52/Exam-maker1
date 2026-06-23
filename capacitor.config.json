@@ -1,0 +1,8 @@
+{
+  "appId": "com.exammaker.app",
+  "appName": "Exam Maker",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}
